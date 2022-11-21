@@ -31,12 +31,12 @@ class UserModelTest(TestCase):
             ['test1@EXAMPLE.com', 'test1@example.com'],
             ['Test2@Example.com', 'Test2@example.com'],
             ['TEST3@EXAMPLE.COM', 'TEST3@example.com'],
-            ['test4@example.COM', 'test4@example.com']
+            ['test4@example.COM', 'test4@example.com'],
         ]
         for email, expected_email in sample_emails:
             user = get_user_model().objects.create_user(
                 email=email,
-                password='sample123'
+                password='sample123',
                 )
             self.assertEqual(user.email, expected_email)
 
@@ -45,5 +45,21 @@ class UserModelTest(TestCase):
         with self.assertRaises(ValueError):
             get_user_model().objects.create_user(
                 email='',
-                password='test123'
+                password='test123',
             )
+
+    def test_create_staff(self):
+        """Test creating a staff user"""
+        user = get_user_model().objects.create_user(
+            email='test@example.com',
+            password='test123',
+        )
+        self.assertTrue(user.is_staff)
+
+    def test_create_superuser(self):
+        """Test creating a superuser"""
+        user = get_user_model().objects.create_superuser(
+            email='test@example.com',
+            password='test123',
+        )
+        self.assertTrue(user.is_superuser)
