@@ -1,5 +1,5 @@
 """
-Test for the Django admin modifications
+Tests for the Django admin modifications
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -18,7 +18,7 @@ class AdminSiteTest(TestCase):
             password='testpass123',
         )
         self.client.force_login(self.admin_user)
-        self.user = self.get_user_model().objects.create_user(
+        self.user = get_user_model().objects.create_user(
             email='user@example.com',
             password='testpass123',
             name='Test user',
