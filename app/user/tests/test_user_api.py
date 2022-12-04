@@ -24,6 +24,7 @@ class PublicUserApiTests(TestCase):
         self.client = APIClient()
         self.payload = {
             'email': 'test@example.com',
+            'password': 'Testpass123'
         }
         self.response = self.client.post(CREATE_USER_URL, self.payload)
     
@@ -31,3 +32,14 @@ class PublicUserApiTests(TestCase):
         """Test creating the user is successfull"""
         response = self.response
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+    
+    def test_user_has_password(self):
+        """Test user created with password"""
+        payload = self.payload
+        user = get_user_model().objects.get(email=payload['email'])
+        self.assertTrue(user.check_password(payload['password']))
+
+    def test_user_password_is_not_in_response_data(self):
+        """Test response data does not contain password"""
+        response = self.response
+        self.assertNotIn('password', response.data)
