@@ -33,6 +33,16 @@ class PublicUserApiTests(TestCase):
         response = self.response
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
+    def test_user_with_email_exists_error(self):
+        """Test error returned if user with email exists"""
+        new_payload = {
+            'email': 'test@example.com',
+            'password': 'Testpass123',
+            'name': 'Test name',
+        }
+        response = self.client.post(CREATE_USER_URL, new_payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
     def test_user_has_password(self):
         """Test user created with password"""
         payload = self.payload
