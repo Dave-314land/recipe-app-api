@@ -54,12 +54,28 @@ class PublicUserApiTests(TestCase):
         response = self.response
         self.assertNotIn('password', response.data)
 
-    def test_user_password_meets_minimum_length(self):
-        "Test user password meets minimum length requirement"
-        min_length = 8
-        payload = self.payload
-        user = get_user_model().objects.get(email=payload['email'])
-        self.assertGreaterEqual(len(user.password), min_length,)
+    def test_user_password_too_short_error(self):
+        "Test error returned if password does not meet min length"
+        bad_payload = {
+            'email': 'test1@example.com',
+            'password': 'short',
+            'name': 'Test name',
+        }
+        response = self.client.post(CREATE_USER_URL, bad_payload)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_user_with_short_password_not_created(self):
+        "Test user does not exist if password does not meet min length"
+        bad_payload = {
+            'email': 'test1@example.com',
+            'password': 'short',
+            'name': 'Test name',
+        }
+        self.client.post(CREATE_USER_URL, bad_payload)
+        bad_user = get_user_model().objects.filter(
+            email=bad_payload['email']
+            ).exists()
+        self.assertFalse(bad_user)
 
     def test_user_has_name(self):
         """Test user created with name"""
